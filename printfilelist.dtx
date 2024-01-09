@@ -1,0 +1,204 @@
+% \iffalse meta-comment
+%
+% Copyright (C) 2024 by Gorkem Aksaray <aksarayg@tcd.ie>
+% ------------------------------------------------------
+%
+% This file may be distributed and/or modified under the conditions of
+% the LaTeX Project Public License, either version 1.3c of this license
+% or (at your option) any later version. The latest version of this
+% license is in:
+%
+%    http://www.latex-project.org/lppl.txt
+%
+% and version 1.3c or later is part of all distributions of LaTeX
+% version 2006/05/20 or later.
+%
+% \fi
+%
+% \iffalse
+%<*driver>
+\ProvidesFile{printfilelist.dtx}
+%</driver>
+%<package>\NeedsTeXFormat{LaTeX2e}[2003/12/01]
+%<package>\ProvidesPackage{printfilelist}
+%<*package>
+    [2024/01/05 v1.0.0 Print a list of files used by the current document]
+%</package>
+%
+%<*driver>
+\documentclass{ltxdoc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[indent=15pt]{parskip}
+\EnableCrossrefs
+\CodelineIndex
+\RecordChanges
+\begin{document}
+  \DocInput{printfilelist.dtx}
+  \PrintChanges
+  \PrintIndex
+\end{document}
+%</driver>
+% \fi
+%
+% \CheckSum{117}
+%
+% \CharacterTable
+%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%   Digits        \0\1\2\3\4\5\6\7\8\9
+%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%   Dollar        \$     Percent       \%     Ampersand     \&
+%   Acute accent  \'     Left paren    \(     Right paren   \)
+%   Asterisk      \*     Plus          \+     Comma         \,
+%   Minus         \-     Point         \.     Solidus       \/
+%   Colon         \:     Semicolon     \;     Less than     \<
+%   Equals        \=     Greater than  \>     Question mark \?
+%   Commercial at \@     Left bracket  \[     Backslash     \\
+%   Right bracket \]     Circumflex    \^     Underscore    \_
+%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%   Right brace   \}     Tilde         \~}
+%
+% \changes{v1.0.0}{2024/01/02}{Initial version}
+%
+% \GetFileInfo{printfilelist.dtx}
+%
+% \title{The \textsf{printfilelist} package\thanks{This document
+%   corresponds to \textsf{printfilelist}~\fileversion, dated \filedate.}}
+% \author{Gorkem Aksaray \\ \texttt{aksarayg@tcd.ie}}
+% \date{\fileversion~from \filedate}
+%
+% \maketitle
+%
+% \noindent Source repo:
+% \url{https://github.com/gaksaray/printfilelist}.
+%
+% \section{Introduction}
+%
+% This is a \LaTeX\ package to add a macro for printing a list of
+% files used by the current document. The package provides two commands:
+% |\printfilelist| and |\ispackageloaded|, both of which can be used
+% at any point within the current document.
+%
+% \section{Usage}
+%
+% To use this package, simply include in the preamble
+% \begin{verbatim}
+%   \usepackage{printfilelist}
+% \end{verbatim}\vspace{-\baselineskip}
+% right before |\begin{document}|. That is, |printfilelist| should be loaded
+% as the last package.
+%
+% \DescribeMacro{\printfilelist\oarg{filter}}
+% This macro, by default, prints a list of all files used
+% by the current document along with their version information.
+% Replace the optional argument \meta{filter} with any text to filter results.
+% For example, you can write
+% \begin{verbatim}
+%   \printfilelist[.sty]
+% \end{verbatim}\vspace{-\baselineskip}
+% to print only the |.sty| files.
+%
+% \DescribeMacro{\ispackageloaded\marg{package}}
+% This macro prints whether \meta{package} is loaded or not.
+% If it's loaded, the output is equivalent to typing
+% |\printfilelist{|\meta{package}|.sty}| without the paragraph breaks.
+%
+% Both |\printfilelist| and |\ispackageloaded| commands have
+% starred versions for suppressing the file version information
+% to list only the file and package names.
+%
+% \section{Package Compatibility}
+%
+% This package relies on \texttt{xstring} and \texttt{suffix} packages.
+% These packages are omitted in the output unless they are explicitly
+% loaded earlier in the document preamble.
+%
+% \StopEventually{}
+%
+% \section{Implementation}
+%
+%    \begin{macrocode}
+\let\thefilelist\@filelist
+\RequirePackage{xstring}
+\RequirePackage{suffix}
+%    \end{macrocode}
+%
+% \begin{macro}{\ispackageloaded}
+%    \begin{macrocode}
+\newcommand*{\ispackageloaded}[1]{%
+    \begingroup
+    \if\relax\detokenize{#1}\relax
+    \else
+        \ifcsname ver@#1.sty\endcsname
+            \noindent\texttt{#1.sty}: \csname ver@#1.sty\endcsname%
+        \else
+            \noindent\texttt{#1} is not loaded%
+        \fi
+    \fi
+    \endgroup
+}
+\WithSuffix\newcommand\ispackageloaded*[1]{%
+    \begingroup
+    \if\relax\detokenize{#1}\relax
+    \else
+        \ifcsname ver@#1.sty\endcsname
+            \noindent\texttt{#1} is loaded%
+        \else
+            \noindent\texttt{#1} is not loaded%
+        \fi
+    \fi
+    \endgroup
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\printfilelist}
+%    \begin{macrocode}
+\newcommand*{\printfilelist}[1][.]{%
+    \begingroup
+    \par
+    \@for\thefile:=\thefilelist\do{%
+        \filename@parse\thefile % for later use
+        \if\relax\detokenize{#1}\relax
+            \noindent\texttt{\thefile}%
+            \ifcsname ver@\thefile\endcsname
+                {: \csname ver@\thefile\endcsname}
+            \fi
+        \else
+            \IfSubStr{\thefile}{printfilelist.sty}{}{
+            \IfSubStr{\thefile}{#1}{
+                \noindent\texttt{\thefile}%
+                \ifcsname ver@\thefile\endcsname
+                    {: \csname ver@\thefile\endcsname}
+                \fi
+            }{}
+            }
+        \fi
+        \par
+    }
+    \endgroup
+}
+\WithSuffix\newcommand\printfilelist*[1][.]{%
+    \begingroup
+    \par
+    \@for\thefile:=\thefilelist\do{%
+        \filename@parse\thefile % for later use
+        \if\relax\detokenize{#1}\relax
+            \noindent\texttt{\thefile}
+        \else
+            \IfSubStr{\thefile}{printfilelist.sty}{}{
+            \IfSubStr{\thefile}{#1}{
+                \par\noindent\texttt{\thefile}\par
+            }{}
+            }
+        \fi
+        \par
+    }
+    \endgroup
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \Finale
+\endinput
