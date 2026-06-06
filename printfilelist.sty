@@ -22,75 +22,68 @@
 %% 
 \NeedsTeXFormat{LaTeX2e}[2003/12/01]
 \ProvidesPackage{printfilelist}
-    [2024/01/05 v1.0.0 Print a list of files used by the current document]
-\let\thefilelist\@filelist
-\RequirePackage{xstring}
-\RequirePackage{suffix}
-\newcommand*{\ispackageloaded}[1]{%
-    \begingroup
-    \if\relax\detokenize{#1}\relax
-    \else
+    [2026/06/06 v1.1.0 Print a list of files used by the current document]
+\listfiles
+\newcommand{\ispackageloaded}{\@ifstar\pfl@ispl@star\pfl@ispl@plain}
+\newcommand{\pfl@ispl@plain}[1]{%
+    \if\relax\detokenize{#1}\relax\else
         \ifcsname ver@#1.sty\endcsname
-            \noindent\texttt{#1.sty}: \csname ver@#1.sty\endcsname%
+            \texttt{#1.sty}: \csname ver@#1.sty\endcsname%
         \else
-            \noindent\texttt{#1} is not loaded%
+            \texttt{#1} is not loaded%
         \fi
     \fi
-    \endgroup
 }
-\WithSuffix\newcommand\ispackageloaded*[1]{%
-    \begingroup
-    \if\relax\detokenize{#1}\relax
-    \else
+\newcommand{\pfl@ispl@star}[1]{%
+    \if\relax\detokenize{#1}\relax\else
         \ifcsname ver@#1.sty\endcsname
-            \noindent\texttt{#1} is loaded%
+            \texttt{#1} is loaded%
         \else
-            \noindent\texttt{#1} is not loaded%
+            \texttt{#1} is not loaded%
         \fi
     \fi
+}
+\newif\ifpfl@inline
+\newif\ifpfl@found
+\newcommand{\printfilelist}{\@ifstar{\pfl@inlinetrue\pfl@run}{\pfl@inlinefalse\pfl@run}}
+\newcommand{\pfl@run}[1][.]{%
+    \begingroup
+    \ifpfl@inline\else\par\fi
+    \pfl@foundfalse
+    \@for\pfl@file:=\@filelist\do{%
+        \expandafter\pfl@test\expandafter{\pfl@file}{#1}%
+    }%
+    \ifpfl@found\else
+        \ifpfl@inline\pfl@nomatch\else\noindent\pfl@nomatch\par\fi
+    \fi
+    \ifpfl@inline\else\par\fi
     \endgroup
 }
-\newcommand*{\printfilelist}[1][.]{%
-    \begingroup
-    \par
-    \@for\thefile:=\thefilelist\do{%
-        \filename@parse\thefile % for later use
-        \if\relax\detokenize{#1}\relax
-            \noindent\texttt{\thefile}%
-            \ifcsname ver@\thefile\endcsname
-                {: \csname ver@\thefile\endcsname}
-            \fi
+\newcommand{\pfl@nomatch}{\textit{No matching files.}}
+\newcommand{\pfl@test}[2]{%
+    \in@{printfilelist.sty}{#1}%
+    \ifin@\else
+        \if\relax\detokenize{#2}\relax
+            \pfl@printline
         \else
-            \IfSubStr{\thefile}{printfilelist.sty}{}{
-            \IfSubStr{\thefile}{#1}{
-                \noindent\texttt{\thefile}%
-                \ifcsname ver@\thefile\endcsname
-                    {: \csname ver@\thefile\endcsname}
-                \fi
-            }{}
-            }
+            \in@{#2}{#1}%
+            \ifin@\pfl@printline\fi
         \fi
-        \par
-    }
-    \endgroup
+    \fi
 }
-\WithSuffix\newcommand\printfilelist*[1][.]{%
-    \begingroup
-    \par
-    \@for\thefile:=\thefilelist\do{%
-        \filename@parse\thefile % for later use
-        \if\relax\detokenize{#1}\relax
-            \noindent\texttt{\thefile}
-        \else
-            \IfSubStr{\thefile}{printfilelist.sty}{}{
-            \IfSubStr{\thefile}{#1}{
-                \par\noindent\texttt{\thefile}\par
-            }{}
-            }
+\newcommand{\pfl@printline}{%
+    \ifpfl@inline
+        \ifpfl@found,\space\fi
+        \pfl@foundtrue
+        \texttt{\pfl@file}%
+    \else
+        \pfl@foundtrue
+        \noindent\texttt{\pfl@file}%
+        \ifcsname ver@\pfl@file\endcsname
+            : \csname ver@\pfl@file\endcsname%
         \fi
         \par
-    }
-    \endgroup
+    \fi
 }
 \endinput
 %%
