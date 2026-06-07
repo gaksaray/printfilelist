@@ -1,17 +1,22 @@
 % \iffalse meta-comment
 %
-% Copyright (C) 2024 by Gorkem Aksaray <aksarayg@tcd.ie>
-% ------------------------------------------------------
+% printfilelist.dtx
+% Copyright 2024-2026 Gorkem Aksaray <aksarayg@tcd.ie>
 %
-% This file may be distributed and/or modified under the conditions of
-% the LaTeX Project Public License, either version 1.3c of this license
-% or (at your option) any later version. The latest version of this
-% license is in:
-%
-%    http://www.latex-project.org/lppl.txt
-%
+% This work may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License, either version 1.3c
+% of this license or (at your option) any later version.
+% The latest version of this license is in
+%   https://www.latex-project.org/lppl.txt
 % and version 1.3c or later is part of all distributions of LaTeX
-% version 2006/05/20 or later.
+% version 2008 or later.
+%
+% This work has the LPPL maintenance status `maintained'.
+% 
+% The Current Maintainer of this work is Gorkem Aksaray.
+%
+% This work consists of the files printfilelist.dtx, printfilelist.ins,
+% and the derived files printfilelist.sty and printfilelist.pdf.
 %
 % \fi
 %
@@ -22,7 +27,7 @@
 %<package>\NeedsTeXFormat{LaTeX2e}[2003/12/01]
 %<package>\ProvidesPackage{printfilelist}
 %<*package>
-    [2026/06/06 v1.1.0 Print a list of files used by the current document]
+    [2026/06/07 v1.1.0 Print a list of the files used by the current document]
 %</package>
 %
 %<*driver>
@@ -30,6 +35,18 @@
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \usepackage[indent=15pt]{parskip}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{microtype}
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks,
+  linkcolor=Red,
+  urlcolor=RoyalBlue,
+  citecolor=RoyalBlue,
+  pdftitle={The printfilelist package},
+  pdfauthor={Gorkem Aksaray},
+  pdfsubject={Print a list of the files used by the current document}}
+\newcommand{\email}[1]{\href{mailto:#1}{\nolinkurl{#1}}}
 \RecordChanges
 \begin{document}
   \DocInput{printfilelist.dtx}
@@ -57,7 +74,7 @@
 %   Right brace   \}     Tilde         \~}
 %
 % \changes{v1.0.0}{2024/01/02}{Initial version}
-% \changes{v1.1.0}{2026/06/06}{Rewritten to use only the LaTeX kernel,
+% \changes{v1.1.0}{2026/06/07}{Rewritten to use only the LaTeX kernel,
 %    removing the xstring and suffix dependencies; the file list is now read
 %    live so the package may be loaded anywhere in the preamble; the starred
 %    form prints a compact, inline, comma-separated list of names; a note is
@@ -66,9 +83,8 @@
 %
 % \GetFileInfo{printfilelist.dtx}
 %
-% \title{The \textsf{printfilelist} package\thanks{This document
-%   corresponds to \textsf{printfilelist}~\fileversion, dated \filedate.}}
-% \author{Gorkem Aksaray \\ \texttt{aksarayg@tcd.ie}}
+% \title{The \textsf{printfilelist} package}
+% \author{Gorkem Aksaray \\ \email{aksarayg@tcd.ie}}
 % \date{\fileversion~from \filedate}
 %
 % \maketitle
@@ -78,10 +94,12 @@
 %
 % \section{Introduction}
 %
-% This is a \LaTeX\ package for printing a list of the files used by the
-% current document. It provides two commands, |\printfilelist| and
-% |\ispackageloaded|, both of which can be used at any point within the
-% document body, and needs nothing beyond the \LaTeX\ kernel.
+% This is a \LaTeX\ package for inspecting the files used by the current
+% document. It provides two commands: |\printfilelist|, which prints a list
+% of all the files (with an option to filter them), and |\ispackageloaded|,
+% which prints whether a given package is loaded or not. Both commands can
+% be issued at any point within the document body. The package has no
+% dependencies beyond the \LaTeX\ kernel.
 %
 % \section{Usage}
 %
@@ -110,10 +128,10 @@
 % embedded in running prose, as in |Files: \printfilelist*[]|.
 %
 % \DescribeMacro{\ispackageloaded\marg{package}}
-% Prints whether \meta{package} is loaded, together with its version if so. The
-% starred form, |\ispackageloaded*|, prints only ``is loaded'' or ``is not
-% loaded''. This command recognises packages (|.sty| files) only, not
-% document classes.
+% Prints whether \meta{package} is loaded, together with its version if it is.
+% The starred form, |\ispackageloaded*|, prints only ``is loaded'' or ``is not
+% loaded''. This command recognizes packages (|.sty| files) only, not document
+% classes.
 %
 % \section{Notes}
 %
