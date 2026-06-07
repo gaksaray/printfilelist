@@ -30,3 +30,9 @@ embedded in running prose.
 Prints whether ***package*** is loaded, together with its version if so.
 The starred form `\ispackageloaded*` prints only "is loaded" or "is not
 loaded". Only packages (`.sty` files) are recognized, not document classes.
+
+---
+
+Author: Gorkem Aksaray (<aksarayg@tcd.ie>)  
+Version: 1.1.0 (2026-06-07)  
+License: [LaTeX Project Public License v1.3c](https://www.latex-project.org/lppl.txt)
