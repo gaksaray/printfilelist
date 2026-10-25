@@ -24,66 +24,54 @@
 \ProvidesPackage{printfilelist}
     [2026/06/07 v1.1.0 Print a list of the files used by the current document]
 \listfiles
-\newcommand{\ispackageloaded}{\@ifstar\pfl@ispl@star\pfl@ispl@plain}
-\newcommand{\pfl@ispl@plain}[1]{%
-    \if\relax\detokenize{#1}\relax\else
-        \ifcsname ver@#1.sty\endcsname
-            \texttt{#1.sty}: \csname ver@#1.sty\endcsname%
+\newcommand*{\ispackageloaded}{\@ifstar{\pfl@ispl\@firstoftwo}{\pfl@ispl\@secondoftwo}}
+\newcommand*{\pfl@ispl}[2]{%
+    \if\relax\detokenize{#2}\relax\else
+        \ifcsname ver@#2.sty\endcsname
+            #1{\texttt{#2} is loaded}%
+              {\texttt{#2.sty}: \csname ver@#2.sty\endcsname}%
         \else
-            \texttt{#1} is not loaded%
-        \fi
-    \fi
-}
-\newcommand{\pfl@ispl@star}[1]{%
-    \if\relax\detokenize{#1}\relax\else
-        \ifcsname ver@#1.sty\endcsname
-            \texttt{#1} is loaded%
-        \else
-            \texttt{#1} is not loaded%
+            \texttt{#2} is not loaded%
         \fi
     \fi
 }
 \newif\ifpfl@inline
 \newif\ifpfl@found
-\newcommand{\printfilelist}{\@ifstar{\pfl@inlinetrue\pfl@run}{\pfl@inlinefalse\pfl@run}}
-\newcommand{\pfl@run}[1][.]{%
-    \begingroup
+\newcommand*{\printfilelist}{\begingroup\@ifstar{\pfl@inlinetrue\pfl@run}\pfl@run}
+\newcommand*{\pfl@run}[1][.]{%
     \ifpfl@inline\else\par\fi
-    \pfl@foundfalse
+    \if\relax\detokenize{#1}\relax
+        \def\pfl@match##1{\in@true}%
+    \else
+        \def\pfl@match##1{\in@{#1}{##1}}%
+    \fi
     \@for\pfl@file:=\@filelist\do{%
-        \expandafter\pfl@test\expandafter{\pfl@file}{#1}%
+        \ifx\pfl@file\pfl@self\else
+            \expandafter\pfl@match\expandafter{\pfl@file}%
+            \ifin@\pfl@printline\fi
+        \fi
     }%
     \ifpfl@found\else
-        \ifpfl@inline\pfl@nomatch\else\noindent\pfl@nomatch\par\fi
+        \ifpfl@inline\else\noindent\fi
+        \pfl@nomatch
     \fi
     \ifpfl@inline\else\par\fi
     \endgroup
 }
+\newcommand*{\pfl@self}{printfilelist.sty}
 \newcommand{\pfl@nomatch}{\textit{No matching files.}}
-\newcommand{\pfl@test}[2]{%
-    \in@{printfilelist.sty}{#1}%
-    \ifin@\else
-        \if\relax\detokenize{#2}\relax
-            \pfl@printline
-        \else
-            \in@{#2}{#1}%
-            \ifin@\pfl@printline\fi
-        \fi
-    \fi
-}
-\newcommand{\pfl@printline}{%
+\newcommand*{\pfl@printline}{%
     \ifpfl@inline
         \ifpfl@found,\space\fi
-        \pfl@foundtrue
         \texttt{\pfl@file}%
     \else
-        \pfl@foundtrue
         \noindent\texttt{\pfl@file}%
         \ifcsname ver@\pfl@file\endcsname
             : \csname ver@\pfl@file\endcsname%
         \fi
         \par
     \fi
+    \pfl@foundtrue
 }
 \endinput
 %%
