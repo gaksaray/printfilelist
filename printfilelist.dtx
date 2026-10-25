@@ -27,7 +27,7 @@
 %<package>\NeedsTeXFormat{LaTeX2e}[2003/12/01]
 %<package>\ProvidesPackage{printfilelist}
 %<*package>
-    [2026/06/07 v1.1.0 Print a list of the files used by the current document]
+    [2026/10/25 v1.1.1 Print a list of the files used by the current document]
 %</package>
 %
 %<*driver>
@@ -80,6 +80,10 @@
 %    form prints a compact, inline, comma-separated list of names; a note is
 %    printed when no file matches the filter; removed the internal file-list
 %    alias}
+% \changes{v1.1.1}{2026/10/25}{Internal refactoring with no change in
+%    output; the inline flag of the starred form no longer leaks outside the
+%    command; the package skips only its own file, not any file whose name
+%    contains it}
 %
 % \GetFileInfo{printfilelist.dtx}
 %
