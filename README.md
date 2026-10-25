@@ -34,5 +34,5 @@ loaded". Only packages (`.sty` files) are recognized, not document classes.
 ---
 
 Author: Gorkem Aksaray (<aksarayg@tcd.ie>)  
-Version: 1.1.0 (2026-06-07)  
+Version: 1.1.1 (2026-10-25)  
 License: [LaTeX Project Public License v1.3c](https://www.latex-project.org/lppl.txt)
